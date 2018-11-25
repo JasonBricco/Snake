@@ -3,6 +3,11 @@
  * @Author: Jason Bricco
  */
 
+import javafx.geometry.Point2D;
+
+/**
+ * Simple integer version of Point2D.
+ */
 public class Point2Di
 {
     private int x, y;
@@ -21,5 +26,10 @@ public class Point2Di
     public int getY()
     {
         return y;
+    }
+
+    public Point2Di add(Point2D other)
+    {
+        return new Point2Di((int)(x + other.getX()), (int)(y + other.getY()));
     }
 }

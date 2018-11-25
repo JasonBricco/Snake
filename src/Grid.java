@@ -7,25 +7,54 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
+/**
+ * Manages the grid - the core component of the game within which obstacles and entities live.
+ */
 public class Grid
 {
-    Random rand = new Random();
-    private final int WIDTH = 24, HEIGHT = 18;
+    private Random rand = new Random();
+    private double powerupSpawn;
+
+    public Grid()
+    {
+        powerupSpawn = 1.0;
+    }
+
+    public final int WIDTH = 24, HEIGHT = 18;
 
     // Stores obstacles in the map.
     private GridItem[] grid = new GridItem[WIDTH * HEIGHT];
 
+    /**
+     * Returns the item in the grid at the given tile position.
+     */
     public GridItem get(Point2Di tileP)
     {
         return grid[tileP.getY() * WIDTH + tileP.getX()];
     }
 
-    public void set(Point2Di tileP, GridItem item)
+    /**
+     * Sets a new item to the grid at the given tile position.
+     */
+    public void set(int tileX, int tileY, GridItem item)
     {
-        grid[tileP.getY() * WIDTH + tileP.getX()] = item;
+        grid[tileY * WIDTH + tileX] = item;
     }
 
+    /**
+     * Sets a new item to the grid at the given tile position.
+     */
+    public void set(Point2Di tileP, GridItem item)
+    {
+        set(tileP.getX(), tileP.getY(), item);
+    }
+
+    /**
+     * Sets the given item to a random available cell in the grid.
+     */
     public void setRandom(GridItem item)
     {
         int x = Utils.randomRange(rand, 1, WIDTH - 1);
@@ -37,16 +66,21 @@ public class Grid
             return;
         }
 
-        // Note: not the most efficient way to do this...
         setRandom(item);
     }
 
+    /**
+     * Clears the entire grid.
+     */
     public void clearAll()
     {
         for (int i = 0; i < grid.length; i++)
             grid[i] = new GridItem();
     }
 
+    /**
+     * Removes all occurrences of the given item from the grid.
+     */
     public void clearSpecific(GridItemID id)
     {
         for (int i = 0; i < grid.length; i++)
@@ -56,30 +90,9 @@ public class Grid
         }
     }
 
-    public void fill()
-    {
-        clearAll();
-
-        int limX = WIDTH - 1, limY = HEIGHT - 1;
-
-        for (int x = 1; x < WIDTH - 1; x++)
-        {
-            grid[0 * WIDTH + x] = new GridItem(GridItemID.WallUp, true);
-            grid[limY * WIDTH + x] = new GridItem(GridItemID.WallDown, true);
-        }
-
-        for (int y = 1; y < HEIGHT - 1; y++)
-        {
-            grid[y * WIDTH + 0] = new GridItem(GridItemID.WallLeft, true);
-            grid[y * WIDTH + limX] = new GridItem(GridItemID.WallRight, true);
-        }
-
-        grid[0 * WIDTH + 0] = new GridItem(GridItemID.WallLeftUp, true);
-        grid[limY * WIDTH + 0] = new GridItem(GridItemID.WallLeftDown, true);
-        grid[0 * WIDTH + limX] = new GridItem(GridItemID.WallRightUp, true);
-        grid[limY * WIDTH + limX] = new GridItem(GridItemID.WallRightDown, true);
-    }
-
+    /**
+     * Draws all grid cells.
+     */
     public void draw(GraphicsContext context, Image[] images)
     {
         for (int y = 0; y < HEIGHT; y++)
@@ -91,6 +104,41 @@ public class Grid
                 if (ob != GridItemID.Empty)
                     context.drawImage(images[ob.ordinal()], x * 32.0, y * 32.0);
             }
+        }
+    }
+
+    /**
+     * Spawns a random power up randomly on the grid.
+     */
+    private void spawnPowerup(Timer timer)
+    {
+        boolean b = rand.nextBoolean();
+        GridItem item = new GridItem(b ? GridItemID.Cherry : GridItemID.GoldenApple, false);
+        setRandom(item);
+
+        TimerTask task = new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                clearSpecific(item.getID());
+            }
+        };
+
+        timer.schedule(task, 10000);
+    }
+
+    /**
+     * Grid's update - called every frame. Spawns a new power up every so often.
+     */
+    public void update(Timer timer, double deltaTime)
+    {
+        powerupSpawn -= deltaTime;
+
+        if (powerupSpawn <= 0.0)
+        {
+            spawnPowerup(timer);
+            powerupSpawn = 15.0 + (rand.nextDouble() * 10.0);
         }
     }
 }

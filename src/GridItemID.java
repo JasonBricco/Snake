@@ -3,6 +3,9 @@
  * @Author: Jason Bricco
  */
 
+/**
+ * Used to identify items on the game's grid.
+ */
 public enum GridItemID
 {
     Empty,
@@ -16,5 +19,7 @@ public enum GridItemID
     WallLeftDown,
     WallRightUp,
     WallRightDown,
-    Apple
+    Apple,
+    GoldenApple,
+    Cherry
 }

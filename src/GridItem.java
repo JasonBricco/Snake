@@ -3,6 +3,9 @@
  * @Author: Jason Bricco
  */
 
+/**
+ * Represents an item that can be stored on the game's grid.
+ */
 public class GridItem
 {
     private GridItemID id;
@@ -20,11 +23,17 @@ public class GridItem
         this.obstacle = obstacle;
     }
 
+    /**
+     * Returns the id for this item.
+     */
     public GridItemID getID()
     {
         return id;
     }
 
+    /**
+     * Returns true if this item will destroy the snake upon contact.
+     */
     public boolean isObstacle()
     {
         return obstacle;

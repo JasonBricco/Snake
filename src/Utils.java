@@ -23,10 +23,14 @@ public class Utils
         return new Point2Di(tileX, tileY);
     }
 
+    /**
+     * Linear interpolation between a and b using percentage t.
+     */
     public static double lerp(double a, double b, double t)
     {
         return a + t * (b - a);
     }
+
     public static Point2D lerp(Point2D a, Point2D b, double t)
     {
         double x = lerp(a.getX(), b.getX(), t);
@@ -34,6 +38,9 @@ public class Utils
         return new Point2D(x, y);
     }
 
+    /**
+     * Returns true if the two doubles are approximately equal, to avoid precision errors.
+     */
     public static boolean approx(double a, double b)
     {
         return Math.abs(a - b) < 1E-7;
@@ -46,7 +53,9 @@ public class Utils
         return approxA && approxB;
     }
 
-    // Returns a random number between min and max.
+    /**
+     * Returns a random number between min and max.
+     */
     public static int randomRange(Random rand, int min, int max)
     {
         return Math.abs(min + rand.nextInt() % ((max + 1) - min));
