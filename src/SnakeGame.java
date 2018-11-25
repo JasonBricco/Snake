@@ -5,6 +5,7 @@
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -57,13 +58,12 @@ public class SnakeGame extends Application
 
     private Timer timer = new Timer();
 
-    private Scene scene;
-    private BorderPane gamePane;
-    private BorderPane gameOverPane;
-
+    private Stage stage;
+    private Scene gameScene, gameOverScene;
     private Sound sound;
-
     private AnimationTimer gameLoop;
+
+    private Text finalScoreText;
 
     public static void main(String[] args)
     {
@@ -137,13 +137,84 @@ public class SnakeGame extends Application
             gridItemImages[i] = new Image("Assets/" + values[i].name() + ".png");
     }
 
+    private void buildGameOverScene()
+    {
+        BorderPane gameOverPane = new BorderPane();
+        gameOverPane.setBackground(Background.EMPTY);
+
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(20.0);
+
+        HBox textBox = new HBox();
+        textBox.setAlignment(Pos.CENTER);
+        Text text = new Text("Game Over");
+        text.setFill(Color.LIGHTGREEN);
+        text.setFont(Font.font("Times New Roman", FontWeight.BOLD, 36));
+        textBox.getChildren().add(text);
+
+        HBox finalScoreBox = new HBox();
+        finalScoreBox.setAlignment(Pos.CENTER);
+        finalScoreText = new Text();
+        finalScoreText.setFont(Font.font("Times New Roman", FontWeight.BOLD, 24));
+        finalScoreText.setFill(Color.LIGHTGREEN);
+        finalScoreBox.getChildren().add(finalScoreText);
+
+        Button retryButton = new Button("Play Again");
+        Button quitButton = new Button("Quit");
+
+        retryButton.setOnAction(e -> startGame());
+        quitButton.setOnAction(e -> onQuit());
+
+        HBox buttons = new HBox();
+        buttons.setAlignment(Pos.CENTER);
+        buttons.setFillHeight(true);
+        buttons.setSpacing(15.0);
+        buttons.getChildren().addAll(retryButton, quitButton);
+
+        vBox.getChildren().addAll(text, finalScoreText, buttons);
+        gameOverPane.setCenter(vBox);
+
+        VBox bottom = new VBox();
+        bottom.setAlignment(Pos.CENTER);
+
+        Text credits = new Text("Credits");
+        credits.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 18));
+        credits.setFill(Color.LIGHTGREEN);
+
+        Text author = new Text("Programmer: Jason Bricco");
+        author.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
+        author.setFill(Color.WHITE);
+
+        Text musicCredit = new Text("Music by: rezoner (opengameart.org)");
+        musicCredit.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
+        musicCredit.setFill(Color.WHITE);
+
+        Text soundCredit = new Text("Sound effects by: Little Robot Sound Factory (opengameart.org)");
+        soundCredit.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
+        soundCredit.setFill(Color.WHITE);
+
+        Text artCredit = new Text("Art by: Cosme (itch.io)");
+        artCredit.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
+        artCredit.setFill(Color.WHITE);
+
+        bottom.getChildren().addAll(credits, author, musicCredit, soundCredit, artCredit);
+        gameOverPane.setBottom(bottom);
+
+        gameOverScene = new Scene(gameOverPane, 768, 600, Color.BLACK);
+        gameOverScene.setRoot(gameOverPane);
+    }
+
     @Override
     public void start(Stage stage)
     {
-        sound = new Sound();
-        stage.setTitle("SnakeGame");
+        this.stage = stage;
 
-        gamePane = new BorderPane();
+        sound = new Sound();
+        stage.setTitle("Snake");
+
+        BorderPane gamePane = new BorderPane();
+        gamePane.setBackground(Background.EMPTY);
 
         Canvas canvas = new Canvas(768, 576);
         gamePane.setBottom(canvas);
@@ -196,9 +267,9 @@ public class SnakeGame extends Application
             }
         };
 
-        scene = new Scene(gamePane, 768, 600, Color.BLACK);
+        gameScene = new Scene(gamePane, 768, 600, Color.BLACK);
 
-        scene.setOnKeyPressed(e ->
+        gameScene.setOnKeyPressed(e ->
         {
             KeyCode code = e.getCode();
             Point2D dir = null;
@@ -233,7 +304,9 @@ public class SnakeGame extends Application
         // Ensure the game closes properly when the red X is pressed.
         stage.setOnCloseRequest(e -> onQuit());
 
-        stage.setScene(scene);
+        buildGameOverScene();
+
+        stage.setScene(gameScene);
         stage.show();
 
         startGame();
@@ -255,8 +328,7 @@ public class SnakeGame extends Application
      */
     private void startGame()
     {
-        scene.setRoot(gamePane);
-        gamePane.setBackground(Background.EMPTY);
+        stage.setScene(gameScene);
         setScore(0);
         foodGoal = 5;
         gameLoop.start();
@@ -274,7 +346,7 @@ public class SnakeGame extends Application
             @Override
             public void run()
             {
-                gameOver();
+                Platform.runLater(() -> gameOver());
             }
         };
 
@@ -288,69 +360,7 @@ public class SnakeGame extends Application
     {
         sound.stop();
         gameLoop.stop();
-
-        gameOverPane = new BorderPane();
-        gameOverPane.setBackground(Background.EMPTY);
-
-        VBox vBox = new VBox();
-        vBox.setAlignment(Pos.CENTER);
-        vBox.setSpacing(20.0);
-
-        HBox textBox = new HBox();
-        textBox.setAlignment(Pos.CENTER);
-        Text text = new Text("Game Over");
-        text.setFill(Color.LIGHTGREEN);
-        text.setFont(Font.font("Times New Roman", FontWeight.BOLD, 36));
-        textBox.getChildren().add(text);
-
-        HBox finalScoreBox = new HBox();
-        finalScoreBox.setAlignment(Pos.CENTER);
-        Text finalScore = new Text("Final Score: " + score);
-        finalScore.setFont(Font.font("Times New Roman", FontWeight.BOLD, 24));
-        finalScore.setFill(Color.LIGHTGREEN);
-        finalScoreBox.getChildren().add(finalScore);
-
-        Button retryButton = new Button("Play Again");
-        Button quitButton = new Button("Quit");
-
-        retryButton.setOnAction(e -> startGame());
-        quitButton.setOnAction(e -> onQuit());
-
-        HBox buttons = new HBox();
-        buttons.setAlignment(Pos.CENTER);
-        buttons.setFillHeight(true);
-        buttons.setSpacing(15.0);
-        buttons.getChildren().addAll(retryButton, quitButton);
-
-        vBox.getChildren().addAll(text, finalScore, buttons);
-        gameOverPane.setCenter(vBox);
-
-        VBox bottom = new VBox();
-        bottom.setAlignment(Pos.CENTER);
-
-        Text credits = new Text("Credits");
-        credits.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 18));
-        credits.setFill(Color.LIGHTGREEN);
-
-        Text author = new Text("Programmer: Jason Bricco");
-        author.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
-        author.setFill(Color.WHITE);
-
-        Text musicCredit = new Text("Music by: rezoner (opengameart.org)");
-        musicCredit.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
-        musicCredit.setFill(Color.WHITE);
-
-        Text soundCredit = new Text("Sound effects by: Little Robot Sound Factory (opengameart.org)");
-        soundCredit.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
-        soundCredit.setFill(Color.WHITE);
-
-        Text artCredit = new Text("Art by: Cosme (itch.io)");
-        artCredit.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 12));
-        artCredit.setFill(Color.WHITE);
-
-        bottom.getChildren().addAll(credits, author, musicCredit, soundCredit, artCredit);
-        gameOverPane.setBottom(bottom);
-
-        scene.setRoot(gameOverPane);
+        finalScoreText.setText("Final Score: " + score);
+        stage.setScene(gameOverScene);
     }
 }

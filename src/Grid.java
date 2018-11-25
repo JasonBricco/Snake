@@ -20,7 +20,7 @@ public class Grid
 
     public Grid()
     {
-        powerupSpawn = 1.0;
+        powerupSpawn = 10.0;
     }
 
     public final int WIDTH = 24, HEIGHT = 18;
