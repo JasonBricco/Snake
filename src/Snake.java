@@ -85,6 +85,11 @@ public class Snake
         setTargets();
     }
 
+    public void resetSpeed()
+    {
+        speed = 5.0;
+    }
+
     public void setLevelEnded()
     {
         removeState = RemoveState.LevelEnded;
@@ -130,6 +135,10 @@ public class Snake
                 sound.play(SoundEffect.Pickup2);
                 breakSteps = 30;
                 break;
+
+            case GreenApple:
+                sound.play(SoundEffect.Pickup3);
+                game.addScore(3);
         }
     }
 

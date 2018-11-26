@@ -112,8 +112,16 @@ public class Grid
      */
     private void spawnPowerup(Timer timer)
     {
-        boolean b = rand.nextBoolean();
-        GridItem item = new GridItem(b ? GridItemID.Cherry : GridItemID.GoldenApple, false);
+        int choice = Utils.randomRange(rand, 1, 100);
+
+        GridItem item;
+
+        if (choice < 20)
+            item = new GridItem(GridItemID.GreenApple, false);
+        else if (choice < 50)
+            item = new GridItem(GridItemID.GoldenApple, false);
+        else item = new GridItem(GridItemID.Cherry, false);
+
         setRandom(item);
 
         TimerTask task = new TimerTask()
@@ -125,7 +133,7 @@ public class Grid
             }
         };
 
-        timer.schedule(task, 10000);
+        timer.schedule(task, 6000);
     }
 
     /**

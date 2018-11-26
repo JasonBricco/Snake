@@ -97,7 +97,7 @@ public class SnakeGame extends Application
     {
         setScore(score + value);
 
-        if (score == foodGoal)
+        if (score >= foodGoal)
         {
             TimerTask task = new TimerTask()
             {
@@ -324,6 +324,7 @@ public class SnakeGame extends Application
         stage.setScene(gameScene);
         setScore(0);
         foodGoal = 5;
+        snake.resetSpeed();
         gameLoop.start();
         changeLevel(1);
         sound.start();

@@ -21,6 +21,7 @@ public class Sound
         new AudioClip(new File("src/Assets/Pickup_03.mp3").toURI().toString()),
         new AudioClip(new File("src/Assets/Pickup_01.mp3").toURI().toString()),
         new AudioClip(new File("src/Assets/Pickup_02.mp3").toURI().toString()),
+        new AudioClip(new File("src/Assets/Pickup_04.mp3").toURI().toString()),
         new AudioClip(new File("src/Assets/Death.mp3").toURI().toString()),
         new AudioClip(new File("src/Assets/Break.mp3").toURI().toString())
     };

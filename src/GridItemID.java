@@ -21,5 +21,6 @@ public enum GridItemID
     WallRightDown,
     Apple,
     GoldenApple,
-    Cherry
+    Cherry,
+    GreenApple
 }
