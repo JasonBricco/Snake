@@ -50,7 +50,6 @@ public class SnakeGame extends Application
         new Level5()
     };
 
-    private Text levelText;
     private int levelID;
     private Level level;
 
@@ -78,7 +77,6 @@ public class SnakeGame extends Application
     {
         levelID = id;
         level = levels[id - 1];
-        levelText.setText("Level: " + id);
         level.begin(grid, snake);
     }
 
@@ -232,12 +230,7 @@ public class SnakeGame extends Application
         scoreText.setFill(Color.LIGHTGREEN);
         scoreText.setFont(Font.font("Times New Roman", FontWeight.BOLD, 24));
 
-        levelText = new Text();
-        levelText.setFill(Color.LIGHTGREEN);
-        levelText.setFont(Font.font("Times New Roman", FontWeight.BOLD, 24));
-
-        hbox.getChildren().addAll(levelText, scoreText);
-        hbox.setSpacing(50.0);
+        hbox.getChildren().add(scoreText);
         gamePane.setTop(hbox);
 
         Image snakeHead = new Image("Assets/SnakeHeadUp.png");
